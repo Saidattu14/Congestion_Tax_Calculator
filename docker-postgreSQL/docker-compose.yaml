@@ -1,0 +1,14 @@
+version : "3.0"
+services:
+    postgressql:
+      image: postgres:latest
+      hostname: localhost
+      container_name: 'postgres-sql'
+      ports:
+        - 5432:5432
+      environment:
+        POSTGRES_USER: 'user'
+        POSTGRES_PASSWORD: '123456'
+        POSTGRES_DB: 'default_database'
+      volumes:
+        - ./db-data/:/var/lib/postgresql/data/
