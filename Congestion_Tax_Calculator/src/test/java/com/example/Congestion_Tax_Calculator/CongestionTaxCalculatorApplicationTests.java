@@ -342,5 +342,5 @@ class CongestionTaxCalculatorApplicationTests {
 		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
 		assertEquals(result.getBody().size(),2);
 	}
-	
+
 }
