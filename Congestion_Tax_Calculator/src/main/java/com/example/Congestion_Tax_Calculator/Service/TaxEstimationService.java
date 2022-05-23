@@ -28,8 +28,7 @@ public class TaxEstimationService {
     @Autowired
     CongestionTaxRepository congestionTaxRepository;
 
-    private final List<TaxEstimatedResponse> taxEstimatedResponses = new ArrayList<>();
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
 
     /**
@@ -85,6 +84,8 @@ public class TaxEstimationService {
 
         CongestionTaxRulesModel congestionTaxRulesObj = congestionTaxRules.get();
         List<VehiclesModel> vehiclesData = taxEstimationData.getVehiclesList();
+        List<TaxEstimatedResponse> taxEstimatedResponses = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (VehiclesModel vehicle : vehiclesData) {
             List<String> taxExemptedDates = new ArrayList<>();
             List<String> errorDates = new ArrayList<>();

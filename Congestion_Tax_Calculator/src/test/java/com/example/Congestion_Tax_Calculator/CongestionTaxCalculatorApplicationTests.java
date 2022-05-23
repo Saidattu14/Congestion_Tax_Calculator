@@ -127,9 +127,9 @@ class CongestionTaxCalculatorApplicationTests {
 
 		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
 		String[] dates = {
-				"2013-07-01 26:45:00",
-				"2013-07-11 17:95:00",
-				"2013-07-12 08:09:90"
+				"2013-07-01 06:45:00",
+				"2013-07-11 17:25:00",
+				"2013-07-12 08:09:10"
 		};
 		VehiclesModel v = new VehiclesModel(1234,"Diplomat_vehicles","Volvo",dates);
 		vehiclesModelList.add(v);
@@ -139,169 +139,169 @@ class CongestionTaxCalculatorApplicationTests {
 		TaxEstimatedResponse t1 = result.getBody().get(0);
 		assertEquals(t1.getMessage(), "Tax_is_Exempted_For_Diplomat_vehicles");
 	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnNonTaxExemptedValidVehicleType() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-07-01 26:45:00",
-//				"2013-07-11 17:95:00",
-//				"2013-07-12 08:09:90"
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		assertEquals(result.getStatusCode(), HttpStatus.OK);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnInValidDates() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = { "2013-05-03 06:45:00",
-//				"2013-0275-03 07:15:00",
-//				"2013-15-13 08:05:00"};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		assertEquals(2, 2);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedDatesSaturdaySunday() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-01-05 06:45:00",
-//				"2013-01-06 07:15:00"
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		assertEquals(t1.getTaxExemptedDates().size(), 2);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedJulyMonth() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-07-01 06:45:00",
-//				"2013-07-11 07:15:00",
-//				"2013-07-12 08:09:10"
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		assertEquals(t1.getTaxExemptedDates().size(), 3);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedBeforeHolidayDate() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-12-24 06:45:00",
-//				"2013-04-30 07:15:00",
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		assertEquals(t1.getTaxExemptedDates().size(), 2);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnInValidTimingDetails() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-07-01 26:45:00",
-//				"2013-07-11 17:95:00",
-//				"2013-07-12 08:09:90"
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		assertEquals(t1.getErrorDates().size(), 3);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnTaxEstimationForTimingDetails() throws Exception {
-//
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-01-15 06:45:00",
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		Map<String,String> queryParams=new HashMap<>();
-//		queryParams.put("city_name","Stockholm");
-//		ResponseEntity<List<CongestionTaxRulesModel>> database_result = template.exchange("/api/v1/congestion_tax_rules/read", HttpMethod.GET,null,  new ParameterizedTypeReference<List<CongestionTaxRulesModel>>() {},queryParams);
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		CongestionTaxRulesModel cs = database_result.getBody().get(0);
-//		assertEquals(t1.getTax(), cs.getTax_details_on_time_630_to_659());
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnMaximumTaxEstimationForTimingDetails() throws Exception {
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-01-15 06:05:00",
-//				"2013-01-15 06:45:00",
-//				"2013-01-15 07:45:00",
-//				"2013-01-15 08:45:00",
-//				"2013-01-15 09:45:00",
-//				"2013-01-15 10:45:00",
-//				"2013-01-15 15:45:00",
-//				"2013-01-15 16:45:00",
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		assertEquals(t1.getTax(), 60);
-//	}
-//
-//	@Test
-//	public void TestingCongestionTaxCalculationApiOnMaximumTaxEstimationAsPerSingleChargeRule() throws Exception {
-//		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
-//		String[] dates = {
-//				"2013-01-15 06:05:00",
-//				"2013-01-15 06:45:00",
-//		};
-//		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
-//		vehiclesModelList.add(v);
-//		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
-//		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
-//		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
-//		Map<String,String> queryParams=new HashMap<>();
-//		queryParams.put("city_name","Stockholm");
-//		ResponseEntity<List<CongestionTaxRulesModel>> database_result = template.exchange("/api/v1/congestion_tax_rules/read", HttpMethod.GET,null,  new ParameterizedTypeReference<List<CongestionTaxRulesModel>>() {},queryParams);
-//		TaxEstimatedResponse t1 = result.getBody().get(0);
-//		CongestionTaxRulesModel cs = database_result.getBody().get(0);
-//		assertEquals(t1.getTax(), Math.max(cs.getTax_details_on_time_630_to_659(),cs.getTax_details_on_time_630_to_659()));
-//	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnNonTaxExemptedValidVehicleType() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-07-01 26:45:00",
+				"2013-07-11 17:95:00",
+				"2013-07-12 08:09:90"
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		assertEquals(result.getStatusCode(), HttpStatus.OK);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnInValidDates() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = { "2013-05-03 06:45:00",
+				"2013-0275-03 07:15:00",
+				"2013-15-13 08:05:00"};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		assertEquals(2, 2);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedDatesSaturdaySunday() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-01-05 06:45:00",
+				"2013-01-06 07:15:00"
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		assertEquals(t1.getTaxExemptedDates().size(), 2);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedJulyMonth() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-07-01 06:45:00",
+				"2013-07-11 07:15:00",
+				"2013-07-12 08:09:10"
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		assertEquals(t1.getTaxExemptedDates().size(), 3);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnValidTaxExemptedBeforeHolidayDate() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-12-24 06:45:00",
+				"2013-04-30 07:15:00",
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		assertEquals(t1.getTaxExemptedDates().size(), 2);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnInValidTimingDetails() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-07-01 26:45:00",
+				"2013-07-11 17:95:00",
+				"2013-07-12 08:09:90"
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		assertEquals(t1.getErrorDates().size(), 3);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnTaxEstimationForTimingDetails() throws Exception {
+
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-01-15 06:45:00",
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		Map<String,String> queryParams=new HashMap<>();
+		queryParams.put("city_name","Stockholm");
+		ResponseEntity<List<CongestionTaxRulesModel>> database_result = template.exchange("/api/v1/congestion_tax_rules/read", HttpMethod.GET,null,  new ParameterizedTypeReference<List<CongestionTaxRulesModel>>() {},queryParams);
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		CongestionTaxRulesModel cs = database_result.getBody().get(0);
+		assertEquals(t1.getTax(), cs.getTax_details_on_time_630_to_659());
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnMaximumTaxEstimationForTimingDetails() throws Exception {
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-01-15 06:05:00",
+				"2013-01-15 06:45:00",
+				"2013-01-15 07:45:00",
+				"2013-01-15 08:45:00",
+				"2013-01-15 09:45:00",
+				"2013-01-15 10:45:00",
+				"2013-01-15 15:45:00",
+				"2013-01-15 16:45:00",
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		assertEquals(t1.getTax(), 60);
+	}
+
+	@Test
+	public void TestingCongestionTaxCalculationApiOnMaximumTaxEstimationAsPerSingleChargeRule() throws Exception {
+		List<VehiclesModel> vehiclesModelList = new ArrayList<>();
+		String[] dates = {
+				"2013-01-15 06:05:00",
+				"2013-01-15 06:45:00",
+		};
+		VehiclesModel v = new VehiclesModel(1234,"Bike","Volvo",dates);
+		vehiclesModelList.add(v);
+		TaxEstimationModel tx = new TaxEstimationModel("Stockholm",vehiclesModelList);
+		HttpEntity<TaxEstimationModel> request = new HttpEntity<>(tx,  null);
+		ResponseEntity<List<TaxEstimatedResponse>> result = template.exchange("/api/v1/tax_calculation", HttpMethod.POST, request,  new ParameterizedTypeReference<List<TaxEstimatedResponse>>() {});
+		Map<String,String> queryParams=new HashMap<>();
+		queryParams.put("city_name","Stockholm");
+		ResponseEntity<List<CongestionTaxRulesModel>> database_result = template.exchange("/api/v1/congestion_tax_rules/read", HttpMethod.GET,null,  new ParameterizedTypeReference<List<CongestionTaxRulesModel>>() {},queryParams);
+		TaxEstimatedResponse t1 = result.getBody().get(0);
+		CongestionTaxRulesModel cs = database_result.getBody().get(0);
+		assertEquals(t1.getTax(), Math.max(cs.getTax_details_on_time_630_to_659(),cs.getTax_details_on_time_630_to_659()));
+	}
 
 }
