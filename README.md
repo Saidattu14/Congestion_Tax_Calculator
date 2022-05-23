@@ -22,8 +22,8 @@
            "2013-02-22 06:19:09",
            "2013-02-23 06:09:09"
          ],
-         "vehicle_id": 1234,
-         "vehicle_type": "Bike",
+         "vehicle_id": 1235,
+         "vehicle_type": "Car",
          "vehicle_name": "volvo"
        }
      ],
@@ -52,8 +52,8 @@
        },
        {
          "vehicle": {
-           "vehicle_id": 1234,
-           "vehicle_type": "Bike",
+           "vehicle_id": 1235,
+           "vehicle_type": "Car",
            "vehicle_name": "volvo",
            "dates": [
              "2013-02-22 06:19:09",
