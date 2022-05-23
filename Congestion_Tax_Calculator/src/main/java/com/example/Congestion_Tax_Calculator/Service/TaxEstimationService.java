@@ -28,9 +28,6 @@ public class TaxEstimationService {
     @Autowired
     CongestionTaxRepository congestionTaxRepository;
 
-
-
-
     /**
      * The method Purpose is to check whether the vehicle type is TaxExempted or NonTaxExempted
      * @param @Vehicle
