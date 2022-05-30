@@ -48,7 +48,6 @@
          "taxExemptedDates": [
            "2013-02-28 06:19:09"
          ],
-         "errorDates": []
        },
        {
          "vehicle": {
@@ -65,7 +64,6 @@
          "taxExemptedDates": [
            "2013-02-23 06:09:09"
          ],
-         "errorDates": []
        }
      ]
 
