@@ -9,12 +9,14 @@ import com.example.Congestion_Tax_Calculator.enums.NonTaxExemptVehicles;
 import com.example.Congestion_Tax_Calculator.enums.TaxExemptVehicles;
 import com.example.Congestion_Tax_Calculator.enums.TaxMessageInfo;
 import com.example.Congestion_Tax_Calculator.enums.VehicleStatus;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -59,9 +61,7 @@ public class TaxEstimationService {
     public Optional<CongestionTaxRulesModel> CheckCity(TaxEstimationModel taxEstimationModel)
     {
         try {
-            Optional<CongestionTaxRulesModel> congestionTaxRules = congestionTaxRepository.findById(taxEstimationModel.getCity_name());
-//            System.out.println(congestionTaxRules);
-            return congestionTaxRules;
+            return congestionTaxRepository.findById(taxEstimationModel.getCity_name());
         }
         catch (Exception e)
         {
@@ -76,16 +76,14 @@ public class TaxEstimationService {
      * @param @congestionTaxRules @taxEstimationData
      * @return TaxEstimated Responses of Vehicles.
      */
-    public List<TaxEstimatedResponse> EstimateTax(Optional<CongestionTaxRulesModel> congestionTaxRules, TaxEstimationModel taxEstimationData)
+    public List<TaxEstimatedResponse> EstimateTax(@NotNull Optional<CongestionTaxRulesModel> congestionTaxRules, @NotNull TaxEstimationModel taxEstimationData)
     {
 
         CongestionTaxRulesModel congestionTaxRulesObj = congestionTaxRules.get();
         List<VehiclesModel> vehiclesData = taxEstimationData.getVehiclesList();
         List<TaxEstimatedResponse> taxEstimatedResponses = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (VehiclesModel vehicle : vehiclesData) {
-            List<String> taxExemptedDates = new ArrayList<>();
-            List<String> errorDates = new ArrayList<>();
+            List<LocalDateTime> taxExemptedDates = new ArrayList<>();
             List<LocalDateTime> validTaxEstimationDates = new ArrayList<>();
             VehicleStatus vehicleStatus1 = CheckTaxExemptVehicle(vehicle);
             if (vehicleStatus1 == VehicleStatus.TaxExempted) {
@@ -93,23 +91,18 @@ public class TaxEstimationService {
                         vehicle,
                         TaxMessageInfo.Tax_is_Exempted_For_ + vehicle.getVehicle_type(),
                         0,
-                        taxExemptedDates, errorDates));
+                        taxExemptedDates));
             }
             else if(vehicleStatus1 == VehicleStatus.NonTaxExempted) {
                 int vehicle_tax = 0;
                 for (int i = 0; i < vehicle.getDates().length; i++) {
-                    try {
-                        String[] datetime = vehicle.getDates()[i].split(" ");
-                        LocalDateTime dateTime = LocalDateTime.parse(vehicle.getDates()[i], formatter);
+
+                        LocalDateTime dateTime = vehicle.getDates()[i];
                         if (!CheckTaxFreeDate(LocalDate.from(dateTime))) {
                             validTaxEstimationDates.add(dateTime);
                         } else {
-                            taxExemptedDates.add(datetime[0] +" "+ datetime[1]);
+                            taxExemptedDates.add(dateTime);
                         }
-
-                    } catch (Exception e) {
-                        errorDates.add(vehicle.getDates()[i]);
-                    }
                 }
                 if (validTaxEstimationDates.size() > 0) {
                     if (congestionTaxRulesObj.isSingle_charge_rule()) {
@@ -118,7 +111,7 @@ public class TaxEstimationService {
                         vehicle_tax = TaxEstimationWithoutSingleCharge(validTaxEstimationDates,congestionTaxRulesObj);
                     }
                 }
-                taxEstimatedResponses.add(vehicleTaxData(vehicle, vehicle_tax, taxExemptedDates, errorDates, validTaxEstimationDates));
+                taxEstimatedResponses.add(vehicleTaxData(vehicle, vehicle_tax, taxExemptedDates, validTaxEstimationDates));
             }
             else
             {
@@ -126,10 +119,9 @@ public class TaxEstimationService {
                     vehicle,
                     TaxMessageInfo.Invalid_Vehicle_Type.toString(),
                     0,
-                    taxExemptedDates, errorDates));
+                    taxExemptedDates));
 
             }
-
         }
         return taxEstimatedResponses;
     }
@@ -158,49 +150,41 @@ public class TaxEstimationService {
      * @param @LocalDateTime (Valid Dates and Time Values)  @CongestionTaxRulesModel (Timing Details)
      * @return tax of all the dates
      */
-    private int SingleChargeRuleTaxEstimation(List<LocalDateTime> validTaxEstimationDates,CongestionTaxRulesModel congestionTaxRulesObj)
+    private int SingleChargeRuleTaxEstimation(@NotNull List<LocalDateTime> validTaxEstimationDates, CongestionTaxRulesModel congestionTaxRulesObj)
     {
-
         List<LocalDateTime> sortedValidTaxEstimationDatesList = validTaxEstimationDates.stream().sorted(Comparator.naturalOrder()).toList();
-        int total_tax = 0;
+        int total_tax = 0,max_tax = 0,tx,index=0;
+        if(sortedValidTaxEstimationDatesList.size() == 1)
+        {
+            LocalDateTime l1 = sortedValidTaxEstimationDatesList.get(0);
+            max_tax = GetTollFee(l1,congestionTaxRulesObj);
+            total_tax = Math.min(total_tax + max_tax, 60);
+            return total_tax;
+        }
         for(int i = 0; i<sortedValidTaxEstimationDatesList.size() && total_tax <60;i++)
         {
-            LocalDateTime l1 = sortedValidTaxEstimationDatesList.get(i);
-            List<LocalDateTime> temp = new ArrayList<>();
-            temp.add(l1);
-            for(int j = i+1;j<sortedValidTaxEstimationDatesList.size();j++)
+            LocalDateTime l1 = sortedValidTaxEstimationDatesList.get(index);
+            LocalDateTime l2 = sortedValidTaxEstimationDatesList.get(i);
+            int hours = l2.getHour() - l1.getHour();
+            int minutes = l2.getMinute() - l1.getMinute();
+            int seconds = l2.getSecond() - l1.getSecond();
+            int total_time = hours*3600 + minutes*60 + seconds;
+            if(l1.getYear() == l2.getYear() && l2.getMonth() == l1.getMonth() && l1.getDayOfMonth() == l2.getDayOfMonth() && total_time<=3600)
             {
-                LocalDateTime l2 = sortedValidTaxEstimationDatesList.get(j);
-                if(l1.getYear() == l2.getYear() && l2.getMonth() == l1.getMonth() && l1.getDayOfMonth() == l2.getDayOfMonth())
-                {
-                   int hours = l2.getHour() - l1.getHour();
-                   int minutes = l2.getMinute() - l1.getMinute();
-                   int seconds = l2.getSecond() - l1.getSecond();
-                   int total_time = hours*3600 + minutes*60 + seconds;
-                   if(total_time <= 3600)
-                   {
-                       temp.add(l2);
-                   }
-                }
-                else
-                {
-                    break;
-                }
-            }
-            int index = 0;
-            int max_tax = 0;
-            for(int i1 = 0; i1 <temp.size();i1++)
-            {
-               int tx = GetTollFee(temp.get(i1),congestionTaxRulesObj);
+               tx = GetTollFee(l2,congestionTaxRulesObj);
                if(tx >= max_tax)
                {
                    max_tax = tx;
-                   index = i1;
                }
             }
-            total_tax = Math.min(total_tax + max_tax, 60);
-            i = i + index;
+            else
+            {
+                total_tax = Math.min(total_tax + max_tax, 60);
+                max_tax = GetTollFee(l2,congestionTaxRulesObj);
+                index = i;
+            }
         }
+        total_tax = Math.min(total_tax + max_tax, 60);
         return total_tax;
     }
 
@@ -214,10 +198,9 @@ public class TaxEstimationService {
         int month = date.getMonthValue();
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         int dayOfMonth = date.getDayOfMonth();
-        String[] holidays_dates = new String[] {"2013-01-01", "2013-03-29",
-                "2014-04-01","2013-05-01","2013-05-09",
-                "2013-06-06","2013-06-21","2013-11-01","2013-12-25","2013-12-26"};
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDate[] holidays_dates = new LocalDate[] {LocalDate.parse("2013-01-01"), LocalDate.parse("2013-03-29"),
+                LocalDate.parse("2014-04-01"), LocalDate.parse("2013-05-01"), LocalDate.parse("2013-05-09"),
+                LocalDate.parse("2013-06-06"), LocalDate.parse("2013-06-21"), LocalDate.parse("2013-11-01"), LocalDate.parse("2013-12-25"), LocalDate.parse("2013-12-26")};
         if(month == 7)
         {
             return true;
@@ -228,18 +211,13 @@ public class TaxEstimationService {
         }
         else if (date.getYear() == 2013)
         {
-            for(int i = 0; i<holidays_dates.length;i++)
-            {
+            for (LocalDate holidays_date : holidays_dates) {
                 try {
-                    LocalDate dateTime = LocalDate.parse(holidays_dates[i]);
-                    if((dateTime.getMonthValue() == month && dateTime.getMonthValue() == dayOfMonth) ||
-                            dayBeforeHolidayCheck(month,dayOfMonth,dateTime.getMonthValue(),dateTime.getDayOfMonth(),dateTime.getYear()))
-                    {
+
+                    if ((holidays_date.getMonthValue() == month && holidays_date.getMonthValue() == dayOfMonth) || dayBeforeHolidayCheck(month,dayOfMonth,holidays_date.getMonthValue(),holidays_date.getDayOfMonth(),holidays_date.getYear())) {
                         return true;
                     }
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     System.out.println(e);
                 }
             }
@@ -254,9 +232,6 @@ public class TaxEstimationService {
      */
     private boolean dayBeforeHolidayCheck(int month, int day,int afterMonth, int afterDay,int year)
     {
-
-        for(int i=1; i<=12;i++)
-        {
             if(afterDay == 1 && afterMonth == 1)
             {
                 if(month == 12 && day == 31)
@@ -268,32 +243,32 @@ public class TaxEstimationService {
             }
             else if(afterDay == 1)
             {
-                if(i == 2 || i == 4 || i == 6 || i == 8 || i== 9 || i == 11)
+                if(afterMonth == 2 || afterMonth == 4 || afterMonth == 6 || afterMonth == 8 || afterMonth== 9 || afterMonth == 11)
                 {
-                    if(month == i-1 && day == 31)
+                    if(month == afterMonth-1 && day == 31)
                     {
 
 //                        System.out.println(month + " "+ day);
                         return true;
                     }
                 }
-                else if(i==5 || i== 7 || i == 10 || i==12)
+                else if(afterMonth==5 || afterMonth== 7 || afterMonth == 10 || afterMonth==12)
                 {
-                    if(month == i-1 && day == 30)
+                    if(month == afterMonth-1 && day == 30)
                     {
 
 //                        System.out.println(month + " "+ day);
                         return true;
                     }
                 }
-                else if(i== 3)
+                else if(afterMonth== 3)
                 {
-                    if(year%4 ==0 && month == i-1 && day == 29)
+                    if(year%4 ==0 && month == afterMonth-1 && day == 29)
                     {
 //                        System.out.println(month + " "+ day);
                         return true;
                     }
-                    else if(month == i-1 && day == 28)
+                    else if(month == afterMonth-1 && day == 28)
                     {
 
 //                        System.out.println(month + " "+ day);
@@ -303,14 +278,14 @@ public class TaxEstimationService {
             }
             else
             {
-                if(afterMonth == i && day == afterDay-1)
+                if(afterMonth == month && day == afterDay-1)
                 {
 
 //                    System.out.println(month + " "+ day);
                     return true;
                 }
             }
-        }
+
         return false;
     }
 
@@ -354,79 +329,45 @@ public class TaxEstimationService {
         else if (hour == 18 && minute <= 29) {
             return congestionTaxRulesObj.getTax_details_on_time_1800_to_1829();
         }
-        else if((hour == 18 && minute >=30) || (hour >= 18 && hour <= 5 && minute >=0 && minute<=59))
-        {
+        else {
            return congestionTaxRulesObj.getTax_details_on_time_1830_to_0559();
         }
-        return 0;
     }
 
 
     /**
      * This method is for creating Tax Response for the vehicle.
-     * @param @CVehicle @TaxExemptedDates @ErrorDates @ValidDates @Tax
+     * @param @CVehicle @TaxExemptedDates @ValidDates @Tax
      * @return Tax Response Data
      */
-    private TaxEstimatedResponse vehicleTaxData(VehiclesModel vehicle, int tax, List<String> taxExemptedDates, List<String> errorDates, List<LocalDateTime>validTaxEstimationDates)
+    private TaxEstimatedResponse vehicleTaxData(VehiclesModel vehicle, int tax, List<LocalDateTime> taxExemptedDates,List<LocalDateTime>validTaxEstimationDates)
     {
         int tED = taxExemptedDates.size();
-        int eD = errorDates.size();
         int vTED = validTaxEstimationDates.size();
-        if(tED > 0 && eD>0 && vTED >0)
-        {
-            return new TaxEstimatedResponse(
-                    vehicle,
-                    TaxMessageInfo.Valid_Dates_Invalid_Dates_And_Tax_Exempted_Days_Are_Present.toString(),
-                    tax,
-                    taxExemptedDates,errorDates);
-        }
-        else if(tED > 0 && eD > 0 && vTED <=0)
-        {
-            return new TaxEstimatedResponse(
-                    vehicle,
-                    TaxMessageInfo.Invalid_Dates_And_Tax_Exempted_Days_Are_Present.toString(),
-                    tax,
-                    taxExemptedDates,errorDates);
-        }
-        else if(tED >0 && eD <=0 && vTED <= 0)
-        {
-            return new TaxEstimatedResponse(
-                    vehicle,
-                    TaxMessageInfo.Only_Tax_Exempted_Days_Are_Present.toString(),
-                    tax,
-                    taxExemptedDates,errorDates);
-        }
-        else if(eD > 0 && vTED <= 0 && tED <= 0)
-        {
-            return new TaxEstimatedResponse(
-                    vehicle,
-                    TaxMessageInfo.Only_Invalid_Dates_Are_Present.toString(),
-                    tax,
-                    taxExemptedDates,errorDates);
-        }
-        else if(vTED >0 && eD <= 0 && tED <= 0)
-        {
-            return new TaxEstimatedResponse(
-                    vehicle,
-                    TaxMessageInfo.Only_Valid_Dates_Days_Are_Present.toString(),
-                    tax,
-                    taxExemptedDates,errorDates);
-        }
-        else if(vTED>0 && tED > 0 && eD <= 0)
+        if(tED > 0 && vTED >0)
         {
             return new TaxEstimatedResponse(
                     vehicle,
                     TaxMessageInfo.Valid_Dates_And_Tax_Exempted_Days_Are_Present.toString(),
                     tax,
-                    taxExemptedDates,errorDates);
+                    taxExemptedDates);
         }
-        else if(vTED >0 && eD > 0 && tED <=0)
+        else if(tED >0)
         {
             return new TaxEstimatedResponse(
                     vehicle,
-                    TaxMessageInfo.Valid_Dates_And_Invalid_Dates_Are_Present.toString(),
+                    TaxMessageInfo.Only_Tax_Exempted_Days_Are_Present.toString(),
                     tax,
-                    taxExemptedDates,errorDates);
+                    taxExemptedDates);
+        }
+
+        else if(vTED >0)
+        {
+            return new TaxEstimatedResponse(
+                    vehicle,
+                    TaxMessageInfo.Only_Valid_Dates_Days_Are_Present.toString(),
+                    tax,
+                    taxExemptedDates);
         }
         return null;
     }

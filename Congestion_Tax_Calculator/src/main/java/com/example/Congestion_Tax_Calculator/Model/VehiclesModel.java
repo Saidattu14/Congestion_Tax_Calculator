@@ -2,6 +2,9 @@ package com.example.Congestion_Tax_Calculator.Model;
 
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.time.LocalDateTime;
 
 /**
  * This is a Vehicle Model class which holds information about Vehicle Details.
@@ -11,10 +14,11 @@ public class VehiclesModel {
     private int vehicle_id;
     private String vehicle_type;
     private String vehicle_name;
-    private String[] dates;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime[] dates;
 
 
-    public VehiclesModel(int vehicle_id, String vehicle_type, String vehicle_name, String[] dates) {
+    public VehiclesModel(int vehicle_id, String vehicle_type, String vehicle_name, LocalDateTime[] dates) {
         this.vehicle_id = vehicle_id;
         this.vehicle_type = vehicle_type;
         this.vehicle_name = vehicle_name;
@@ -33,7 +37,7 @@ public class VehiclesModel {
         return vehicle_name;
     }
 
-    public String[] getDates() {
+    public LocalDateTime[] getDates() {
         return dates;
     }
 

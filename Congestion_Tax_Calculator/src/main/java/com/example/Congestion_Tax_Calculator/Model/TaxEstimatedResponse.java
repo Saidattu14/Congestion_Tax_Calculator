@@ -2,6 +2,7 @@ package com.example.Congestion_Tax_Calculator.Model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -16,19 +17,18 @@ public class TaxEstimatedResponse {
     private VehiclesModel vehicle;
     private String message;
     private int tax;
-    private List<String> taxExemptedDates;
-    private List<String> errorDates;
+    private List<LocalDateTime> taxExemptedDates;
+
 
     public TaxEstimatedResponse() {
 
     }
 
-    public TaxEstimatedResponse(VehiclesModel vehicle, String message, int tax, List<String>  taxExemptedDates, List<String> errorDates) {
+    public TaxEstimatedResponse(VehiclesModel vehicle, String message, int tax, List<LocalDateTime> taxExemptedDates) {
         this.vehicle = vehicle;
         this.message = message;
         this.tax = tax;
         this.taxExemptedDates = taxExemptedDates;
-        this.errorDates = errorDates;
     }
 
      public VehiclesModel getVehicle() {
@@ -43,13 +43,11 @@ public class TaxEstimatedResponse {
          return tax;
      }
 
-     public List<String> getTaxExemptedDates() {
+     public List<LocalDateTime> getTaxExemptedDates() {
          return taxExemptedDates;
      }
 
-     public List<String> getErrorDates() {
-         return errorDates;
-     }
+
 
      @Override
     public String toString() {
@@ -58,7 +56,6 @@ public class TaxEstimatedResponse {
                 ", message='" + message + '\'' +
                 ", tax=" + tax +
                 ", taxExemptedDates=" + taxExemptedDates +
-                ", errorDates=" + errorDates +
                 '}';
     }
 }

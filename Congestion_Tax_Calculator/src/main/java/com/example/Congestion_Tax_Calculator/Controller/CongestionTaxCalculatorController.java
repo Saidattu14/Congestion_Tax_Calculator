@@ -7,6 +7,8 @@ import com.example.Congestion_Tax_Calculator.Service.CongestionTaxService;
 import com.example.Congestion_Tax_Calculator.Service.TaxEstimationService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ public class CongestionTaxCalculatorController {
     CongestionTaxService congestionTaxService;
 
 
+
     /**
      * This is a post request end point /tax_calculation.
      * This request is for tax calculation of vehicles details with respective to City.
@@ -43,13 +46,8 @@ public class CongestionTaxCalculatorController {
              }
              else
              {
-
                  List<TaxEstimatedResponse> taxEstimatedResponseList = taxEstimationService.EstimateTax(congestionTaxRules,taxEstimationData);
-                 ObjectMapper mapper = new ObjectMapper();
-                 String jsonArray = mapper.writeValueAsString(taxEstimatedResponseList);
-                 TypeReference<List<TaxEstimatedResponse>> typeRef = new TypeReference<>() {};
-                 List<TaxEstimatedResponse> list = mapper.readValue(jsonArray, typeRef);
-                 return new ResponseEntity<>(list, HttpStatus.OK);
+                 return new ResponseEntity<>(taxEstimatedResponseList, HttpStatus.OK);
              }
         }
         catch (Exception e)
@@ -86,6 +84,7 @@ public class CongestionTaxCalculatorController {
     @PostMapping("/congestion_tax_rules/insert")
     public ResponseEntity<String> insertCongestionTaxRules(@RequestBody CongestionTaxRulesModel congestionTaxRulesModel) {
         String result = congestionTaxService.insert_row(congestionTaxRulesModel);
+        System.out.println(result);
         if(result.equals("Inserted Successfully"))
         {
             return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
@@ -94,7 +93,7 @@ public class CongestionTaxCalculatorController {
         {
             return new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
         }
-        else if(result == "City Congestion Tax Rules Already Present")
+        else if(result.equals("City with Congestion Tax Rules Already Present"))
         {
             return new ResponseEntity<>(result, HttpStatus.CONFLICT);
         }
