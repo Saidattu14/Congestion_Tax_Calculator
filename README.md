@@ -7,64 +7,51 @@
 
 ## Request
 
-      {
-     "vehiclesList": [
-       {
-         "dates": [
-           "2013-02-28 06:19:09"
-         ],
-         "vehicle_id": 1234,
-         "vehicle_type": "Bike",
-         "vehicle_name": "volvo"
-       },
-       {
-         "dates": [
-           "2013-02-22 06:19:09",
-           "2013-02-23 06:09:09"
-         ],
-         "vehicle_id": 1235,
-         "vehicle_type": "Car",
-         "vehicle_name": "volvo"
-       }
-     ],
-     "city_name": "Stockholm"
+{
+  "vehiclesList": [
+  
+    {
+      "dates": [
+        "2013-08-20 06:05:00",
+        "2013-08-20 07:05:00",
+        "2013-08-20 08:05:00",
+        "2013-08-20 09:05:00",
+        "2013-08-20 10:05:00"
+      ],
+      "vehicleId": 1234,
+      "vehicleType": "BIKE",
+      "vehicleName": "volvo"
     }
+  ],
+  "cityName": "Stockholm"
+}
 
 
 ## Response
 
-     [
-       {
-         "vehicle": {
-           "vehicle_id": 1234,
-           "vehicle_type": "Bike",
-           "vehicle_name": "volvo",
-           "dates": [
-             "2013-02-28 06:19:09"
-           ]
-         },
-         "message": "Only_Tax_Exempted_Days_Are_Present",
-         "tax": 0,
-         "taxExemptedDates": [
-           "2013-02-28 06:19:09"
-         ],
-       },
-       {
-         "vehicle": {
-           "vehicle_id": 1235,
-           "vehicle_type": "Car",
-           "vehicle_name": "volvo",
-           "dates": [
-             "2013-02-22 06:19:09",
-             "2013-02-23 06:09:09"
-           ]
-         },
-         "message": "Valid_Dates_And_Tax_Exempted_Days_Are_Present",
-         "tax": 8,
-         "taxExemptedDates": [
-           "2013-02-23 06:09:09"
-         ],
-       }
-     ]
+[
 
+  {
+    "vehicle": {
+      "vehicleId": 1234,
+      "vehicleType": "BIKE",
+      "vehicleName": "volvo",
+      "dates": 
+      
+      [
+      
+        "2013-08-20 06:05:00",
+        "2013-08-20 07:05:00",
+        "2013-08-20 08:05:00",
+        "2013-08-20 09:05:00",
+        "2013-08-20 10:05:00"
+        
+      ]
+    },
+    "message": "ONLY_VALID_DATES_DAYS_ARE_PRESENT",
+    "tax": 39,
+    "taxExemptedDates": []
+  } 
+  
+ ]
   
