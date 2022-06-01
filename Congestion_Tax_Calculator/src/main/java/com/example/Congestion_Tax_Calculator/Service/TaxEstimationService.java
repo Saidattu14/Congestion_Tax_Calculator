@@ -134,7 +134,8 @@ public class TaxEstimationService {
     }
 
      /**
-     * The method Purpose is for Calculating Tax on Date Values Without Single Charge Rule
+     * The method Purpose is for Calculating Tax on Date Values Without Single Charge Rule.
+      * It works by estimating tax per every timing details with the limit of maximum per day tax 60.
      * @param @LocalDateTime (Valid Dates and Time Values)  @CongestionTaxRulesModel (Timing Details)
      * @return total tax of all dates
      */
@@ -420,3 +421,4 @@ public class TaxEstimationService {
     }
 
 }
+
