@@ -17,18 +17,18 @@ public interface CongestionTaxRepository extends JpaRepository<CongestionTaxRule
     @Modifying
     @Transactional
     @Query(value = "CREATE TABLE congestion_tax_rules(\n" +
-            "  city_name varchar(255) NOT NULL PRIMARY KEY,\n" +
-            "  single_charge_rule boolean,\n" +
-            "  tax_details_on_time_600_to_629 int,\n" +
-            "  tax_details_on_time_630_to_659 int,\n" +
-            "  tax_details_on_time_700_to_759 int,\n" +
-            "  tax_details_on_time_800_to_829 int,\n" +
-            "  tax_details_on_time_830_to_1459 int,\n" +
-            "  tax_details_on_time_1500_to_1529 int,\n" +
-            "  tax_details_on_time_1530_to_1659 int,\n" +
-            "  tax_details_on_time_1700_to_1759 int,\n" +
-            "  tax_details_on_time_1800_to_1829 int,\n" +
-            "  tax_details_on_time_1830_to_0559 int \n" +
+            "  cityName varchar(255) NOT NULL PRIMARY KEY,\n" +
+            "  singleChargeRule boolean,\n" +
+            "  taxDetailsOnTime600to629 int,\n" +
+            "  taxDetailsOnTime630to659 int,\n" +
+            "  taxDetailsOnTime700to759 int,\n" +
+            "  taxDetailsOnTime800to829 int,\n" +
+            "  taxDetailsOnTime830to1459 int,\n" +
+            "  taxDetailsOnTime1500to1529 int,\n" +
+            "  taxDetailsOnTime1530to1659 int,\n" +
+            "  taxDetailsOnTime1700to1759 int,\n" +
+            "  taxDetailsOnTime1800to1829 int,\n" +
+            "  taxDetailsOnTime1830to0559 int \n" +
             ")",nativeQuery = true)
     void createCongestionTaxRulesTable();
 

@@ -1,59 +1,63 @@
 package com.example.Congestion_Tax_Calculator.Controller;
-
 import com.example.Congestion_Tax_Calculator.Model.CongestionTaxRulesModel;
 import com.example.Congestion_Tax_Calculator.Model.TaxEstimatedResponse;
 import com.example.Congestion_Tax_Calculator.Model.TaxEstimationModel;
 import com.example.Congestion_Tax_Calculator.Service.CongestionTaxService;
 import com.example.Congestion_Tax_Calculator.Service.TaxEstimationService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/api/v1")
+@Slf4j
 public class CongestionTaxCalculatorController {
 
     @Autowired
-    TaxEstimationService taxEstimationService;
+    private TaxEstimationService taxEstimationService;
 
     @Autowired
-    CongestionTaxService congestionTaxService;
+    private CongestionTaxService congestionTaxService;
 
+
+    public CongestionTaxCalculatorController(TaxEstimationService taxEstimationService, CongestionTaxService congestionTaxService) {
+        this.taxEstimationService = taxEstimationService;
+        this.congestionTaxService = congestionTaxService;
+    }
 
 
     /**
      * This is a post request end point /tax_calculation.
      * This request is for tax calculation of vehicles details with respective to City.
-     * @return the result of tax details of Each vehicle.
+     * @return @List<TaxEstimatedResponse> the result of tax details of Each vehicle.
      */
     @PostMapping("/tax_calculation")
     public ResponseEntity<List<TaxEstimatedResponse>> taxEstimation(@RequestBody TaxEstimationModel taxEstimationData) {
         try {
-             Optional<CongestionTaxRulesModel> congestionTaxRules = taxEstimationService.CheckCity(taxEstimationData);
-             if(congestionTaxRules.isEmpty() == true || congestionTaxRules == null)
+             Optional<CongestionTaxRulesModel> congestionTaxRules = taxEstimationService.checkCity(taxEstimationData);
+             if(congestionTaxRules.isEmpty())
              {
 
-                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+                 return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
              }
              else
              {
-                 List<TaxEstimatedResponse> taxEstimatedResponseList = taxEstimationService.EstimateTax(congestionTaxRules,taxEstimationData);
+                 CongestionTaxRulesModel congestionTaxRulesObj = congestionTaxRules.get();
+                 List<TaxEstimatedResponse> taxEstimatedResponseList = taxEstimationService.estimateTax(congestionTaxRulesObj,taxEstimationData);
                  return new ResponseEntity<>(taxEstimatedResponseList, HttpStatus.OK);
              }
         }
         catch (Exception e)
         {
-            System.out.println(e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.trace(String.valueOf(e));
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -63,17 +67,13 @@ public class CongestionTaxCalculatorController {
      * @return the String Whether table is successfully created or not.
      */
     @PostMapping("/congestion_tax_rules/create")
-    public ResponseEntity<String> createTable() {
-        String result = congestionTaxService.create_table();
-        if(result.equals("Table Created"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.CREATED);
-        }
-        else if(result.equals("Table Failed To Create"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
-        }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> createCongestionTaxRulesTable() {
+        String result = congestionTaxService.createTable();
+        return switch (result) {
+            case "Table Created" -> new ResponseEntity<>(result, HttpStatus.CREATED);
+            case "Table Failed To Create" -> new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
+            default -> new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 
     /**
@@ -83,21 +83,14 @@ public class CongestionTaxCalculatorController {
      */
     @PostMapping("/congestion_tax_rules/insert")
     public ResponseEntity<String> insertCongestionTaxRules(@RequestBody CongestionTaxRulesModel congestionTaxRulesModel) {
-        String result = congestionTaxService.insert_row(congestionTaxRulesModel);
-        System.out.println(result);
-        if(result.equals("Inserted Successfully"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
-        }
-        else if(result.equals("Failed to Insert"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
-        }
-        else if(result.equals("City with Congestion Tax Rules Already Present"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.CONFLICT);
-        }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        String result = congestionTaxService.insertRow(congestionTaxRulesModel);
+
+        return switch (result) {
+            case "Inserted Successfully" -> new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+            case "Failed to Insert" -> new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
+            case "City with Congestion Tax Rules Already Present" -> new ResponseEntity<>(result, HttpStatus.CONFLICT);
+            default -> new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 
     /**
@@ -107,8 +100,8 @@ public class CongestionTaxCalculatorController {
      */
     @GetMapping("/congestion_tax_rules/read")
     public ResponseEntity<List<CongestionTaxRulesModel>> readCongestionTaxRules(
-            @RequestParam(required = false) String city_name) {
-        List<CongestionTaxRulesModel> list = congestionTaxService.read_all(city_name);
+            @RequestParam(required = false) String cityName) {
+        List<CongestionTaxRulesModel> list = congestionTaxService.readAll(cityName);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -119,16 +112,12 @@ public class CongestionTaxCalculatorController {
      */
     @PostMapping("/congestion_tax_rules/drop")
     public ResponseEntity<String> dropCongestionTaxRules() {
-        String result = congestionTaxService.drop_table();
-        if(result.equals("Table Dropped Successfully"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
-        }
-        else if(result.equals("Table Failed To Drop"))
-        {
-            return new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
-        }
-        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        String result = congestionTaxService.dropTable();
+        return switch (result) {
+            case "Table Dropped Successfully" -> new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+            case "Table Failed To Drop" -> new ResponseEntity<>(result, HttpStatus.NOT_IMPLEMENTED);
+            default -> new ResponseEntity<>("", HttpStatus.INTERNAL_SERVER_ERROR);
+        };
     }
 
 }

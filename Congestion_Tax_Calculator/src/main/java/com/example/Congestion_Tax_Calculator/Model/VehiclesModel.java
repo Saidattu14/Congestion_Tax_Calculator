@@ -11,33 +11,37 @@ import java.time.LocalDateTime;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class VehiclesModel {
-    private int vehicle_id;
-    private String vehicle_type;
-    private String vehicle_name;
+    private int vehicleId;
+    private String vehicleType;
+    private String vehicleName;
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime[] dates;
 
 
-    public VehiclesModel(int vehicle_id, String vehicle_type, String vehicle_name, LocalDateTime[] dates) {
-        this.vehicle_id = vehicle_id;
-        this.vehicle_type = vehicle_type;
-        this.vehicle_name = vehicle_name;
+    public VehiclesModel(int vehicleId, String vehicleType, String vehicleName, LocalDateTime[] dates) {
+        this.vehicleId = vehicleId;
+        this.vehicleType = vehicleType;
+        this.vehicleName = vehicleName;
         this.dates = dates;
     }
 
-    public int getVehicle_id() {
-        return vehicle_id;
+    public int getVehicleId() {
+
+        return vehicleId;
     }
 
-    public String getVehicle_type() {
-        return vehicle_type;
+    public String getVehicleType()
+    {
+        return vehicleType;
     }
 
-    public String getVehicle_name() {
-        return vehicle_name;
+    public String getVehicleName()
+    {
+        return vehicleName;
     }
 
     public LocalDateTime[] getDates() {
+
         return dates;
     }
 

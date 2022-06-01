@@ -48,14 +48,4 @@ public class TaxEstimatedResponse {
      }
 
 
-
-     @Override
-    public String toString() {
-        return "TaxEstimatedRespose{" +
-                "vehicle=" + vehicle +
-                ", message='" + message + '\'' +
-                ", tax=" + tax +
-                ", taxExemptedDates=" + taxExemptedDates +
-                '}';
-    }
 }

@@ -13,17 +13,17 @@ import java.util.List;
 
 
     private List<VehiclesModel> vehiclesList;
-    private String city_name;
+    private String cityName;
 
 
-    public String getCity_name() {
-        return city_name;
+    public String getCityName() {
+        return cityName;
     }
 
 
-    public TaxEstimationModel(String city_name, List<VehiclesModel> vehiclesList) {
+    public TaxEstimationModel(String cityName, List<VehiclesModel> vehiclesList) {
         this.vehiclesList = vehiclesList;
-        this.city_name = city_name;
+        this.cityName = cityName;
     }
 
      public List<VehiclesModel> getVehiclesList() {
